@@ -1,0 +1,10 @@
+{
+  "name": "flsw_factions",
+  "version": "0.1.0",
+  "title": "FLSW Factions",
+  "author": "reticentae",
+  "contact": "",
+  "homepage": "",
+  "description": "A Multi-faction PvP/PvE Mod",
+  "dependencies": ["base"]
+}

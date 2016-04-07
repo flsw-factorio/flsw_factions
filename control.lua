@@ -27,6 +27,7 @@ function f_pvp.assign_faction(player, faction)
   player.color = faction.color
   player.force = faction.force
   player.teleport(faction.starting_position)
+  player.insert({name="iron-axe", count = 1})
   if not faction.start_ready then
     faction.clear_until = game.tick + 60 * 10
     faction.init_period = true

@@ -27,7 +27,6 @@ function f_pvp.assign_faction(player, faction)
   player.color = faction.color
   player.force = faction.force
   player.teleport(faction.starting_position)
-  player.insert({name="iron-axe", count = 1})
   if not faction.start_ready then
     faction.clear_until = game.tick + 60 * 10
     faction.init_period = true
@@ -39,33 +38,86 @@ function f_pvp.on_init()
 
   game.disable_tips_and_tricks()
 
+  local tiles = {}
+  for x=-20,20,1 do
+    for y=-20,20,1 do
+      table.insert(tiles, {
+        name = "deepwater",
+        position = { x, y}
+      })
+    end
+  end
+  for x=-12,12,1 do
+    for y=-12,12,1 do
+      table.insert(tiles, {
+        name = "water",
+        position = { x, y}
+      })
+    end
+  end
+  for x=-10,10,1 do
+    for y=-10,10,1 do
+      table.insert(tiles, {
+        name = "grass",
+        position = { x, y}
+      })
+    end
+  end
+  for x=-7,7,1 do
+    for y=-7,7,1 do
+      table.insert(tiles, {
+        name = "concrete",
+        position = { x, y}
+      })
+    end
+  end
+
+ local surface = game.get_surface("nauvis")
+ surface.set_tiles(tiles)
+
   global.factions = {
     blue = {
       color = {r = 0, g = 0, b = 1, a = 0.9},
-      starting_position = { x = -200 , y = -5000},
-      chest = "blue_chest",
+      starting_position = { x = 0 , y = -800},
+      chest =  surface.create_entity({
+            name = "logistic-chest-requester",
+            position = { x = 0, y = -4 },
+            force=game.forces.neutral
+          })
     },
     red = {
-      color = {r = 1, g = 0, b = 0, a = 0.5},
-      starting_position = {x = 50 , y = 5500},
-      chest = "red_chest",
+      color = {r = 0.3, g = 1.0, b = 0.2, a = 0.5},
+      starting_position = {x = 0 , y = 800},
+      chest =  surface.create_entity({
+            name = "logistic-chest-passive-provider",
+            position = { x = 0, y = 4 },
+            force=game.forces.neutral
+          })
     },
     purple = {
       color = {r = 0.5, g = 0.1, b = 1, a = 0.8},
-      starting_position = {x = -3490 , y = 160},
-      chest = "purple_chest",
+      starting_position = {x = -800 , y = 0},
+      chest =  surface.create_entity({
+            name = "logistic-chest-active-provider",
+            position = { x = -4, y = 0 },
+            force=game.forces.neutral
+          })
     },
     yellow = {
-      color = {r = 189/255, g = 183/255, b = 107/255, a = 0.5},
-      starting_position = {x = 4900 , y = 0},
-      chest = "yellow_chest",
+      color = {r = 0.74, g = 0.71, b = 0.42, a = 0.5},
+      starting_position = {x = 800 , y = 0},
+      chest =  surface.create_entity({
+            name = "logistic-chest-storage",
+            position = { x = 4, y = 0 },
+            force=game.forces.neutral
+          })
     }
   }
 
   for name, faction in pairs(global.factions) do
+
     faction.name = name
-    faction.chest = game.get_entity_by_tag(faction.chest)
-    faction.force = game.forces[name] or game.create_force(name)
+    faction.force = game.create_force(name)
     faction.start_ready = faction.start_ready or false
     faction.init_period = faction.init_period or false
   end
@@ -99,7 +151,7 @@ function f_pvp.on_tick(event)
         {location.x - sandbox_distance, location.y - sandbox_distance},
         {location.x + sandbox_distance, location.y + sandbox_distance}
       }
-      local gremlins = game.surfaces["nauvis"].find_entities_filtered({area = box, force= "enemy"})
+      local gremlins = game.get_surface("nauvis").find_entities_filtered({area = box, force= "enemy"})
       for key, gremlin in pairs(gremlins) do
         gremlin.destroy()
       end

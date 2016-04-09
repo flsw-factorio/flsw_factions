@@ -15,6 +15,8 @@ function f_pvp.generate_resource(name, location, dx, dy)
   end
 end
 
+-- So this also does some tile generation
+-- Its kind of simple, but rarely should something really stupid happen
 function f_pvp.generate_resources(faction)
   -- We also make sure they aren't landing in water or lava or something....
   local tiles = {}
@@ -58,19 +60,16 @@ function f_pvp.generate_resources(faction)
 end
 
 function f_pvp.assign_faction(player, faction)
-
   player.color = faction.color
   player.force = faction.force
   player.teleport(faction.starting_position)
-  if not faction.start_ready then
-    faction.clear_until = game.tick + 60 * 10
+  if faction.clear_until == 0 then
     faction.init_period = true
   end
-
+  faction.clear_until = game.tick + 60 * 10
 end
 
 function f_pvp.on_init()
-
   game.disable_tips_and_tricks()
 
   local tiles = {}
@@ -175,8 +174,9 @@ function f_pvp.on_init()
 
     faction.name = name
     faction.force = game.create_force(name)
-    faction.start_ready = faction.start_ready or false
-    faction.init_period = faction.init_period or false
+    faction.chest.destructible = false
+    faction.init_period = false
+    faction.clear_until = 0
   end
 
 end
@@ -186,7 +186,11 @@ function f_pvp.on_load()
 end
 
 function f_pvp.on_player_created(event)
-
+  local player = game.get_player(event.player_index)
+  player.get_inventory(defines.inventory.player_main).clear()
+  player.get_inventory(defines.inventory.player_quickbar).clear()
+  player.get_inventory(defines.inventory.player_guns).clear()
+  player.get_inventory(defines.inventory.player_ammo).clear()
 end
 
 function f_pvp.on_tick(event)
@@ -201,7 +205,13 @@ function f_pvp.on_tick(event)
     end
   end
   for name, faction in pairs(global.factions) do
-    if (faction.init_period) then
+    if faction.init_period then
+      if game.tick > faction.clear_until then
+          f_pvp.generate_resources(faction)
+          faction.init_period = nil
+      end
+    end
+    if game.tick < faction.clear_until then
       local sandbox_distance= 1000
       local location = faction.starting_position
       local box = {
@@ -212,12 +222,8 @@ function f_pvp.on_tick(event)
       for key, gremlin in pairs(gremlins) do
         gremlin.destroy()
       end
-      if game.tick > faction.clear_until then
-          f_pvp.generate_resources(faction)
-          faction.start_ready = true
-          faction.init_period = nil
-      end
     end
+
   end
 end
 

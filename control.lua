@@ -18,15 +18,38 @@ end
 function f_pvp.generate_resources(faction)
   -- We also make sure they aren't landing in water or lava or something....
   local tiles = {}
+  local water_names = {}
+  water_names["deepwater"] = true
+  water_names["deepwater-green"] = true
+  water_names["water"] = true
+  water_names["water-green"] = true
+
+  local surface = game.get_surface("nauvis")
   for x=faction.starting_position.x-25,faction.starting_position.x+25,1 do
     for y=faction.starting_position.y-25,faction.starting_position.y+25,1 do
-      table.insert(tiles, {
-        name = "dirt",
-        position = { x, y }
-      })
+      local tile = surface.get_tile(x,y)
+      if water_names[tile.name] then
+        table.insert(tiles, {
+          name = "grass-dry",
+          position = { x, y }
+        })
+      end
     end
   end
-  local surface = game.get_surface("nauvis")
+
+  -- And that they have at least a little bit of water....
+  for x=faction.starting_position.x+22,faction.starting_position.x+25,1 do
+    for y=faction.starting_position.y+22,faction.starting_position.y+25,1 do
+      local tile = surface.get_tile(x,y)
+      if not water_names[tile.name] then
+        table.insert(tiles, {
+          name = "water",
+          position = { x, y }
+        })
+      end
+    end
+  end
+
   surface.set_tiles(tiles)
   f_pvp.generate_resource("stone", faction.starting_position, 20, 0)
   f_pvp.generate_resource("iron-ore", faction.starting_position, -20, 0)

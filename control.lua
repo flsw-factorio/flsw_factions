@@ -75,6 +75,27 @@ function f_pvp.on_init()
  local surface = game.get_surface("nauvis")
  surface.set_tiles(tiles)
 
+ surface.create_entity({
+   name = "stone-wall",
+   position = { x = 6,  y = 6},
+   force=game.forces.neutral
+ })
+ surface.create_entity({
+   name = "stone-wall",
+   position = { x = -6,  y = 6},
+   force=game.forces.neutral
+ })
+ surface.create_entity({
+   name = "stone-wall",
+   position = { x = 6,  y = -6},
+   force=game.forces.neutral
+ })
+ surface.create_entity({
+   name = "stone-wall",
+   position = { x = -6,  y = -6},
+   force=game.forces.neutral
+ })
+
   global.factions = {
     blue = {
       color = {r = 0, g = 0, b = 1, a = 0.9},

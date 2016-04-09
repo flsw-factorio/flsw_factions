@@ -110,25 +110,28 @@ function f_pvp.on_init()
  local surface = game.get_surface("nauvis")
  surface.set_tiles(tiles)
 
+local guard = game.create_force("guardians")
+guard.set_cease_fire("player", true)
+
  surface.create_entity({
-   name = "stone-wall",
+   name = "big-worm-turret",
    position = { x = 6,  y = 6},
-   force=game.forces.neutral
+   force=guard
  })
  surface.create_entity({
-   name = "stone-wall",
+   name = "big-worm-turret",
    position = { x = -6,  y = 6},
-   force=game.forces.neutral
+   force=guard
  })
  surface.create_entity({
-   name = "stone-wall",
+   name = "big-worm-turret",
    position = { x = 6,  y = -6},
-   force=game.forces.neutral
+   force=guard
  })
  surface.create_entity({
-   name = "stone-wall",
+   name = "big-worm-turret",
    position = { x = -6,  y = -6},
-   force=game.forces.neutral
+   force=guard
  })
 
   global.factions = {
@@ -174,6 +177,7 @@ function f_pvp.on_init()
 
     faction.name = name
     faction.force = game.create_force(name)
+    guard.set_cease_fire(name, true)
     faction.chest.destructible = false
     faction.init_period = false
     faction.clear_until = 0

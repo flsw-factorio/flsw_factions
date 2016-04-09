@@ -16,6 +16,18 @@ function f_pvp.generate_resource(name, location, dx, dy)
 end
 
 function f_pvp.generate_resources(faction)
+  -- We also make sure they aren't landing in water or lava or something....
+  local tiles = {}
+  for x=faction.starting_position.x-25,faction.starting_position.x+25,1 do
+    for y=faction.starting_position.y-25,faction.starting_position.y+25,1 do
+      table.insert(tiles, {
+        name = "dirt",
+        position = { x, y }
+      })
+    end
+  end
+  local surface = game.get_surface("nauvis")
+  surface.set_tiles(tiles)
   f_pvp.generate_resource("stone", faction.starting_position, 20, 0)
   f_pvp.generate_resource("iron-ore", faction.starting_position, -20, 0)
   f_pvp.generate_resource("copper-ore", faction.starting_position, 0, -20)
@@ -39,11 +51,12 @@ function f_pvp.on_init()
   game.disable_tips_and_tricks()
 
   local tiles = {}
+  -- Initial starting location
   for x=-20,20,1 do
     for y=-20,20,1 do
       table.insert(tiles, {
         name = "deepwater",
-        position = { x, y}
+        position = { x, y }
       })
     end
   end
@@ -51,7 +64,7 @@ function f_pvp.on_init()
     for y=-12,12,1 do
       table.insert(tiles, {
         name = "water",
-        position = { x, y}
+        position = { x, y }
       })
     end
   end
@@ -59,7 +72,7 @@ function f_pvp.on_init()
     for y=-10,10,1 do
       table.insert(tiles, {
         name = "grass",
-        position = { x, y}
+        position = { x, y }
       })
     end
   end
@@ -67,7 +80,7 @@ function f_pvp.on_init()
     for y=-7,7,1 do
       table.insert(tiles, {
         name = "concrete",
-        position = { x, y}
+        position = { x, y }
       })
     end
   end
